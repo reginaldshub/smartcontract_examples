@@ -14,7 +14,8 @@ contract certificates {
     
     address[] private allowedAddress;
     address public requestedAddress;
-    bool verified = false;
+    bool public verified = false;
+    address private authority = 0xdD870fA1b7C4700F2BD7f44238821C26f7392148;
     
      modifier onlyOwner{
        if(owner == msg.sender){
@@ -40,15 +41,18 @@ contract certificates {
     // string[] public certificate_names;
     
     function setCertificateDetails(string _name, string _subject, uint _marks) onlyOwner public {
-        Certificate storage cert = certificate_name[_name];
-        
-        cert.marks.push(_marks);
-        cert.subject.push(_subject);
+        if(!verified){
+            Certificate storage cert = certificate_name[_name];
+            cert.marks.push(_marks);
+            cert.subject.push(_subject);
+        }
     }
     
      function editCertificateDetails(string _name,uint _index, string _subject, uint _marks) onlyOwner public {
-        certificate_name[_name].subject[_index] = _subject;
-        certificate_name[_name].marks[_index] = _marks;
+        if(!verified){
+            certificate_name[_name].subject[_index] = _subject;
+            certificate_name[_name].marks[_index] = _marks;
+        }
     }
     
     //   function deleteCertificateDetails(string _name,uint _index) onlyOwner public {
@@ -82,11 +86,10 @@ contract certificates {
         return allowedAddress;
     }
     
-     function verify(address _authority) public{
-         if(msg.sender == _authority){
-        verified = true;
-         }
+     function verify() public{
+        if(msg.sender == authority){
+         verified = true;
+        }
     }
-    
     
 }
